@@ -1,2 +1,327 @@
 # CAPM-CONTROLE.github.io
 FICHE DE CONTRÔLE QUALITÉ
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche de Contrôle Qualité - HANGCHA</title>
+    <!-- Librairie pour la génération du PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #002f6c; /* Bleu corporate */
+            --bg-color: #f8f9fa;
+            --border-color: #bdc3c7;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+        }
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        /* En-tête */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .header-table td {
+            border: 2px solid var(--primary-color);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .logo-area {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e74c3c; /* Rouge HANGCHA */
+            letter-spacing: 2px;
+        }
+        .title-area {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        /* Sections d'informations */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="date"], input[type="number"], textarea {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        /* Types de matériel & Décision (Inline checkboxes) */
+        .checkbox-group {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        .checkbox-group p {
+            margin: 0 0 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .options-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .options-flex label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .options-flex input[type="checkbox"], .options-flex input[type="radio"] {
+            width: 18px;
+            height: 18px;
+        }
+        /* Tableaux de contrôle */
+        .control-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .control-table th, .control-table td {
+            border: 1px solid #7f8c8d;
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .control-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .control-table th.section-title {
+            background-color: #34495e;
+            text-align: left;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .control-table input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .control-table input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 4px;
+        }
+        /* Bouton d'action */
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-submit:hover {
+            background-color: #219653;
+        }
+        /* Ajustements pour l'export PDF (Cache les inputs radio pour afficher des "X" ou des cases propres) */
+        .pdf-view {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="pdf-content">
+    
+    <!-- En-tête officiel -->
+    <table class="header-table">
+        <tr>
+            <td style="width: 35%;" class="logo-area">HANGCHA<br><span style="font-size:12px; color:#333;">FRANCE</span></td>
+            <td style="width: 65%;" class="title-area">FICHE DE CONTRÔLE QUALITÉ</td>
+        </tr>
+    </table>
+
+    <form id="qualityForm">
+        <!-- Infos Générales -->
+        <div class="info-grid">
+            <div class="form-group">
+                <label>Date :</label>
+                <input type="date" id="docDate" required>
+            </div>
+            <div class="form-group">
+                <label>Matériel préparé par :</label>
+                <input type="text" id="preparedBy" required placeholder="Nom du préparateur">
+            </div>
+            <div class="form-group">
+                <label>Contrôleur Qualité :</label>
+                <input type="text" id="controller" required placeholder="Nom du contrôleur">
+            </div>
+            <div class="form-group">
+                <label>N° Matériel :</label>
+                <input type="text" id="serialNumber" required placeholder="Numéro de série">
+            </div>
+            <div class="form-group">
+                <label>Type matériel :</label>
+                <input type="text" id="machineType" placeholder="Ex: XF25">
+            </div>
+            <div class="form-group">
+                <label>Nombre d'heures :</label>
+                <input type="number" id="hours" placeholder="Ex: 12">
+            </div>
+        </div>
+
+        <!-- Catégorie Matériel -->
+        <div class="checkbox-group">
+            <p>Catégorie du matériel :</p>
+            <div class="options-flex">
+                <label><input type="radio" name="category" value="Chariot frontal"> Chariot frontal</label>
+                <label><input type="radio" name="category" value="Magasinage"> Magasinage</label>
+                <label><input type="radio" name="category" value="Nacelle"> Nacelle</label>
+                <label><input type="radio" name="category" value="Autres"> Autres</label>
+            </div>
+        </div>
+
+        <!-- Tableau des Points de Contrôle -->
+        <table class="control-table">
+            <thead>
+                <tr>
+                    <th style="width: 45%;">Point de contrôle</th>
+                    <th style="width: 12%; text-align: center;">Conforme</th>
+                    <th style="width: 15%; text-align: center;">Non conf.</th>
+                    <th style="width: 28%;">Observation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Section 1 -->
+                <tr><th colspan="4" class="section-title">Fonctionnement général de la machine</th></tr>
+                <script>
+                    const points1 = [
+                        "Fonctionnement général de la machine", "Éclairage", "Organes de sécurité", 
+                        "Absence de fuite", "Plaque de capacité conforme", 
+                        "Machine conforme à la pro forma", "Essai de fonctionnement réalisé"
+                    ];
+                    points1.forEach((pt, i) => {
+                        document.write(`
+                            <tr>
+                                scale-2
+                                <td>${pt}</td>
+                                <td class="text-center"><input type="radio" name="pt1_${i}" value="C"></td>
+                                <td class="text-center"><input type="radio" name="pt1_${i}" value="NC"></td>
+                                <td><input type="text" name="obs1_${i}"></td>
+                            </tr>
+                        `);
+                    });
+                </script>
+
+                <!-- Section 2 -->
+                <tr><th colspan="4" class="section-title">Options et accessoires</th></tr>
+                <script>
+                    const points2 = [
+                        "Déplacement latéral (TDL)", "Positionneur de fourches", "4ème fonction hydraulique",
+                        "Cabine", "Chauffage", "Caméra", "Blue Spot", "Red Line", "Chargeur", "Autres accessoires"
+                    ];
+                    points2.forEach((pt, i) => {
+                        document.write(`
+                            <tr>
+                                <td>${pt}</td>
+                                <td class="text-center"><input type="radio" name="pt2_${i}" value="C"></td>
+                                <td class="text-center"><input type="radio" name="pt2_${i}" value="NC"></td>
+                                <td><input type="text" name="obs2_${i}"></td>
+                            </tr>
+                        `);
+                    });
+                </script>
+            </tbody>
+        </table>
+
+        <!-- Observations Générales -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label>OBSERVATIONS GÉNÉRALES :</label>
+            <textarea id="generalObservations" rows="3" placeholder="Notes complémentaires..."></textarea>
+        </div>
+
+        <!-- Décision Finale -->
+        <div class="checkbox-group" style="border: 2px solid var(--primary-color);">
+            <p style="color: var(--primary-color); font-size: 15px;">DÉCISION FINALE :</p>
+            <div class="options-flex">
+                <label><input type="radio" name="finalDecision" value="Conforme pour livraison"> Conforme pour livraison</label>
+                <label><input type="radio" name="finalDecision" value="Conforme avec réserves"> Conforme avec réserves</label>
+                <label><input type="radio" name="finalDecision" value="Non conforme"> <span style="color: red; font-weight: bold;">Non conforme</span></label>
+            </div>
+        </div>
+
+        <!-- Bouton d'action (Sera automatiquement masqué dans le PDF) -->
+        <button type="button" class="btn-submit" id="downloadBtn" onclick="generateQualityPDF()">Générer et Télécharger la Fiche PDF</button>
+    </form>
+</div>
+
+<script>
+    // Initialise la date du jour par défaut
+    document.getElementById('docDate').valueAsDate = new Date();
+
+    function generateQualityPDF() {
+        const element = document.getElementById('pdf-content');
+        const btn = document.getElementById('downloadBtn');
+        
+        // Récupération des infos pour nommer le fichier proprement
+        const numMat = document.getElementById('serialNumber').value || 'Inconnu';
+        const typeMat = document.getElementById('machineType').value || 'Mat';
+        
+        // Option de configuration pour un rendu parfait sur format A4
+        const opt = {
+            margin:       8,
+            filename:     `Fiche_Controle_${typeMat}_N_${numMat}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // On masque le bouton de téléchargement pour qu'il n'apparaisse pas sur le PDF
+        btn.style.display = 'none';
+
+        // Génération du PDF
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Réaffichage du bouton une fois le téléchargement fini
+            btn.style.display = 'block';
+        }).catch(err => {
+            console.error(err);
+            btn.style.display = 'block';
+        });
+    }
+</script>
+
+</body>
+</html>
